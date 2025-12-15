@@ -4,7 +4,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import adminRoutes from './routes/admin.routes.js';
 import adminExtraRoutes from './routes/adminExtra.routes.js';
-import billboardRoutes from './routes/billboard.routes.js';
+import publicBillboardRoutes from './routes/billboard.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
 import drawRoutes from './routes/draw.routes.js';
@@ -55,7 +55,7 @@ app.use('/api/uploads', uploadRoutes);
 app.use('/api/draws', drawRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin', adminExtraRoutes);
-app.use('/api/billboards', billboardRoutes);
+app.use('/api/billboards', publicBillboardRoutes);
 app.use('/api/advertiser', advertiserRoutes);
 app.use('/api/ads', adsRoutes);
 
