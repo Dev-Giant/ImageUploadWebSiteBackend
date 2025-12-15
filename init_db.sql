@@ -6,6 +6,35 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Unified user profile details (one-to-one with users, works for all roles)
+CREATE TABLE IF NOT EXISTS user_profiles (
+  user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  -- Name fields (different forms use different names)
+  first_name TEXT,
+  last_name TEXT,
+  username TEXT,
+  -- Personal info
+  date_of_birth DATE,
+  gender TEXT,
+  -- Contact info
+  phone_country_code TEXT,
+  phone_number TEXT,
+  mobile_number TEXT,
+  area_code TEXT,
+  -- Address fields
+  postal_code TEXT,
+  country TEXT,
+  state TEXT,
+  state_region TEXT,
+  city TEXT,
+  street TEXT,
+  -- Professional info (for admin/advertiser)
+  position TEXT,
+  company TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS uploads (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id),

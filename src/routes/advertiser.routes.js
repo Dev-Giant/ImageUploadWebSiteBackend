@@ -17,7 +17,7 @@ import {
 const router = express.Router();
 
 // All routes require advertiser authentication
-router.use(auth(['advertiser', 'admin']));
+router.use(auth(['advertiser', 'ancillary_advertiser', 'admin']));
 
 // Campaigns
 router.get('/campaigns', getCampaigns);

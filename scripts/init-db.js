@@ -61,6 +61,7 @@ async function initDatabase() {
     console.log('✅ Database initialized successfully!');
     console.log('\n📊 Tables created:');
     console.log('   - users');
+    console.log('   - advertiser_profiles');
     console.log('   - uploads');
     console.log('   - draws');
     console.log('   - entries');

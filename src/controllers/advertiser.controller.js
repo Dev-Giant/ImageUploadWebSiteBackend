@@ -162,7 +162,14 @@ export const getAccount = async (req, res) => {
   const advertiserId = req.user.id;
   try {
     const { rows } = await pool.query(
-      'SELECT id, email, role, created_at FROM users WHERE id=$1',
+      `SELECT 
+        u.id, u.email, u.role, u.created_at,
+        up.first_name, up.last_name, up.position, up.company,
+        up.postal_code, up.country, up.state, up.city,
+        up.phone_country_code, up.phone_number
+      FROM users u
+      LEFT JOIN user_profiles up ON up.user_id = u.id
+      WHERE u.id=$1`,
       [advertiserId]
     );
     if (rows.length === 0) {
@@ -177,11 +184,62 @@ export const getAccount = async (req, res) => {
 
 export const updateAccount = async (req, res) => {
   const advertiserId = req.user.id;
-  const { email } = req.body;
+  const {
+    email,
+    firstName,
+    lastName,
+    position,
+    company,
+    postalCode,
+    country,
+    state,
+    city,
+    phoneCountryCode,
+    phoneNumber,
+  } = req.body;
   try {
-    await pool.query('UPDATE users SET email=$1 WHERE id=$2', [email, advertiserId]);
+    await pool.query('BEGIN');
+
+    if (email) {
+      await pool.query('UPDATE users SET email=$1 WHERE id=$2', [email, advertiserId]);
+    }
+
+    await pool.query(
+      `INSERT INTO user_profiles (
+        user_id, first_name, last_name, position, company, postal_code,
+        country, state, city, phone_country_code, phone_number
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      ON CONFLICT (user_id) DO UPDATE SET
+        first_name = EXCLUDED.first_name,
+        last_name = EXCLUDED.last_name,
+        position = EXCLUDED.position,
+        company = EXCLUDED.company,
+        postal_code = EXCLUDED.postal_code,
+        country = EXCLUDED.country,
+        state = EXCLUDED.state,
+        city = EXCLUDED.city,
+        phone_country_code = EXCLUDED.phone_country_code,
+        phone_number = EXCLUDED.phone_number,
+        updated_at = NOW()`,
+      [
+        advertiserId,
+        firstName || null,
+        lastName || null,
+        position || null,
+        company || null,
+        postalCode || null,
+        country || null,
+        state || null,
+        city || null,
+        phoneCountryCode || null,
+        phoneNumber || null,
+      ]
+    );
+
+    await pool.query('COMMIT');
     res.json({ message: 'Account updated' });
   } catch (err) {
+    await pool.query('ROLLBACK');
     console.error(err);
     res.status(500).json({ error: 'Failed to update account' });
   }

@@ -5,7 +5,15 @@ export const getProfile = async (req, res) => {
   const userId = req.user.id;
   try {
     const { rows } = await pool.query(
-      'SELECT id, email, role, created_at FROM users WHERE id=$1',
+      `SELECT 
+        u.id, u.email, u.role, u.created_at,
+        up.first_name, up.last_name, up.username, up.date_of_birth, up.gender,
+        up.phone_country_code, up.phone_number, up.mobile_number, up.area_code,
+        up.postal_code, up.country, up.state, up.state_region, up.city, up.street,
+        up.position, up.company
+      FROM users u
+      LEFT JOIN user_profiles up ON up.user_id = u.id
+      WHERE u.id=$1`,
       [userId]
     );
     if (rows.length === 0) {
