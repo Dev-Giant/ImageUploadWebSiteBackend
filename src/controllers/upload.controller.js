@@ -21,7 +21,7 @@ export const uploadImage = [
 
   async (req, res) => {
     try {
-      const { platform, country, city, wave } = req.body;
+      const { platform, country, city, wave, tag_count } = req.body;
       const userId = req.user.id;
 
       // Limit uploads per day (15 max)
@@ -39,10 +39,11 @@ export const uploadImage = [
       const filepath = path.join(uploadDir, filename);
       await sharp(req.file.buffer).resize(1024).jpeg({ quality: 80 }).toFile(filepath);
 
-      // Record upload
+      // Record upload (tag_count defaults to 0 if not provided)
+      const tagCount = parseInt(tag_count) || 0;
       await pool.query(
-        'INSERT INTO uploads (user_id, filename, platform) VALUES ($1, $2, $3)',
-        [userId, filename, platform]
+        'INSERT INTO uploads (user_id, filename, platform, tag_count) VALUES ($1, $2, $3, $4)',
+        [userId, filename, platform, tagCount]
       );
 
       // Create sweepstake entry

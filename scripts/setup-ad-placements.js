@@ -151,15 +151,28 @@ async function setupAdPlacements() {
     
     const leaderboardType = types.find(t => t.name === 'leaderboard');
     const skyscraperType = types.find(t => t.name === 'skyscraper');
+    const mediumRectangleType = types.find(t => t.name === 'medium_rectangle');
     
     for (const platform of platforms) {
+      let positionOrder = 1;
+      
+      // Create 4 medium rectangle positions (as per requirements)
+      for (let i = 1; i <= 4; i++) {
+        await pool.query(
+          `INSERT INTO ad_placements (platform_id, placement_type_id, position_name, position_order, base_price)
+           VALUES ($1, $2, $3, $4, $5)
+           ON CONFLICT (platform_id, position_name) DO NOTHING`,
+          [platform.id, mediumRectangleType.id, `medium_rectangle_${i}`, positionOrder++, 100.00]
+        );
+      }
+      
       // Create 2 leaderboard positions
       for (let i = 1; i <= 2; i++) {
         await pool.query(
           `INSERT INTO ad_placements (platform_id, placement_type_id, position_name, position_order, base_price)
            VALUES ($1, $2, $3, $4, $5)
            ON CONFLICT (platform_id, position_name) DO NOTHING`,
-          [platform.id, leaderboardType.id, `leaderboard_${i}`, i, 150.00]
+          [platform.id, leaderboardType.id, `leaderboard_${i}`, positionOrder++, 150.00]
         );
       }
       
@@ -169,7 +182,7 @@ async function setupAdPlacements() {
           `INSERT INTO ad_placements (platform_id, placement_type_id, position_name, position_order, base_price)
            VALUES ($1, $2, $3, $4, $5)
            ON CONFLICT (platform_id, position_name) DO NOTHING`,
-          [platform.id, skyscraperType.id, `skyscraper_${i}`, i + 2, 120.00]
+          [platform.id, skyscraperType.id, `skyscraper_${i}`, positionOrder++, 120.00]
         );
       }
       
@@ -179,8 +192,8 @@ async function setupAdPlacements() {
     console.log('\n✅ Ad placements system setup completed!');
     console.log('📊 Summary:');
     console.log(`   - ${platforms.length} social media platforms`);
-    console.log(`   - 4 ad positions per platform (2 leaderboard + 2 skyscraper)`);
-    console.log(`   - ${platforms.length * 4} total ad placements created`);
+    console.log(`   - 8 ad positions per platform (4 medium rectangles + 2 leaderboard + 2 skyscraper)`);
+    console.log(`   - ${platforms.length * 8} total ad placements created`);
     console.log('   - Regional pricing system configured');
     
   } catch (err) {

@@ -12,6 +12,7 @@ import userRoutes from './routes/user.routes.js';
 import advertiserRoutes from './routes/advertiser.routes.js';
 import adsRoutes from './routes/ads.routes.js';
 import adPlacementsRoutes from './routes/ad-placements.routes.js';
+import emailRoutes from './routes/email.routes.js';
 
 dotenv.config();
 const app = express();
@@ -60,5 +61,6 @@ app.use('/api/billboards', publicBillboardRoutes);
 app.use('/api/advertiser', advertiserRoutes);
 app.use('/api/ads', adsRoutes);
 app.use('/api/ad-placements', adPlacementsRoutes);
+app.use('/api/email', emailRoutes);
 
 export default app;

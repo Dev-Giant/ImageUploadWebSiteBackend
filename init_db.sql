@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS uploads (
   user_id INTEGER REFERENCES users(id),
   filename TEXT,
   platform TEXT,
+  tag_count INTEGER DEFAULT 0,
   created_at TIMESTAMP DEFAULT NOW()
 );
 
