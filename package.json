@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "node src/index.js",
-    "init-db": "node scripts/init-db.js"
+    "init-db": "node scripts/init-db.js",
+    "setup-test-data": "node scripts/setup-all-test-data.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

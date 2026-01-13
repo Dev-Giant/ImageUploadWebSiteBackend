@@ -17,11 +17,15 @@ async function createSampleData() {
   try {
     console.log('🔄 Creating sample data...');
     
-    // Get the test advertiser
-    const advertiserResult = await pool.query('SELECT id FROM users WHERE email = $1', ['test@advertiser.com']);
+    // Get the test advertiser (check both possible emails for compatibility)
+    let advertiserResult = await pool.query('SELECT id FROM users WHERE email = $1', ['advertiser@test.com']);
+    if (advertiserResult.rows.length === 0) {
+      advertiserResult = await pool.query('SELECT id FROM users WHERE email = $1', ['test@advertiser.com']);
+    }
     
     if (advertiserResult.rows.length === 0) {
       console.log('❌ Test advertiser not found. Please run create-test-advertiser.js first.');
+      console.log('   Note: This script requires the server to be running for API-based advertiser creation.');
       return;
     }
     

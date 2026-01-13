@@ -13,6 +13,11 @@ import {
   getAccount,
   updateAccount,
 } from '../controllers/advertiser.controller.js';
+import {
+  uploadAdvertiserMedia,
+  getAdvertiserMedia,
+  deleteAdvertiserMedia,
+} from '../controllers/advertiser-media.controller.js';
 
 const router = express.Router();
 
@@ -29,6 +34,11 @@ router.delete('/campaigns/:id', deleteCampaign);
 router.get('/billboards', getBillboards);
 router.post('/billboards', createBillboard);
 router.put('/billboards/:id', updateBillboard);
+
+// Media Uploads
+router.post('/media/upload', ...uploadAdvertiserMedia);
+router.get('/media', getAdvertiserMedia);
+router.delete('/media/:id', deleteAdvertiserMedia);
 
 // Analytics
 router.get('/analytics', getAnalytics);

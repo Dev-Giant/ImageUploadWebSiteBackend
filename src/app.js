@@ -48,6 +48,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Serve uploaded files (user uploads and advertiser media)
+app.use('/uploads', express.static(process.env.UPLOADS_DIR || 'src/uploads'));
 app.use('/uploads', express.static(process.env.UPLOADS_DIR || 'src/uploads'));
 
 // Routes

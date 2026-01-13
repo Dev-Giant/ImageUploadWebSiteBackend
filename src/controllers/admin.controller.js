@@ -40,12 +40,34 @@ export const deleteUser = async (req, res) => {
 
 // ---- UPLOADS ----
 
-// List all uploads
+// List all uploads (both user and advertiser)
 export const getUploads = async (req, res) => {
   try {
-    const { rows } = await pool.query(
-      'SELECT u.id, u.filename, u.created_at, u.user_id, us.email AS user_email FROM uploads u JOIN users us ON u.user_id=us.id ORDER BY u.created_at DESC'
-    );
+    const { upload_type } = req.query; // Optional filter: 'user' or 'advertiser'
+    
+    let query = `
+      SELECT 
+        u.id, 
+        u.filename, 
+        u.created_at, 
+        u.user_id, 
+        u.upload_type,
+        u.platform,
+        us.email AS user_email,
+        us.role AS user_role
+      FROM uploads u 
+      JOIN users us ON u.user_id=us.id
+    `;
+    
+    const params = [];
+    if (upload_type) {
+      query += ' WHERE u.upload_type=$1';
+      params.push(upload_type);
+    }
+    
+    query += ' ORDER BY u.created_at DESC';
+    
+    const { rows } = await pool.query(query, params);
     res.json(rows);
   } catch (err) {
     console.error(err);

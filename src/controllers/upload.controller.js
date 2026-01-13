@@ -42,8 +42,8 @@ export const uploadImage = [
       // Record upload (tag_count defaults to 0 if not provided)
       const tagCount = parseInt(tag_count) || 0;
       await pool.query(
-        'INSERT INTO uploads (user_id, filename, platform, tag_count) VALUES ($1, $2, $3, $4)',
-        [userId, filename, platform, tagCount]
+        'INSERT INTO uploads (user_id, filename, platform, tag_count, upload_type) VALUES ($1, $2, $3, $4, $5)',
+        [userId, filename, platform, tagCount, 'user']
       );
 
       // Create sweepstake entry
