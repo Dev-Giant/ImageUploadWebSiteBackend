@@ -1,11 +1,20 @@
 import { pool } from '../config/db.js';
 import { formatDrawNumber } from '../utils/drawNumber.js';
 
-// Get all draws (public)
+// Get all draws (public) - Modified for launch version to show all as upcoming
 export const getDraws = async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM draws ORDER BY id ASC');
-    res.json(rows);
+    
+    // For launch version: mark all draws as upcoming/planned
+    const modifiedDraws = rows.map(draw => ({
+      ...draw,
+      status: 'upcoming', // Override status to show as upcoming
+      start_date: draw.start_date || new Date(Date.now() + 30*24*60*60*1000).toISOString(), // Set future date if none
+      message: 'Coming soon to your area! Register now to be notified when this sweepstake launches.'
+    }));
+    
+    res.json(modifiedDraws);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch draws' });

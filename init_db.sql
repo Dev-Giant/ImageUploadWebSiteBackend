@@ -50,7 +50,12 @@ CREATE TABLE IF NOT EXISTS draws (
   country TEXT,
   city TEXT,
   wave TEXT,
-  next_number INT DEFAULT 0
+  next_number INT DEFAULT 0,
+  status TEXT DEFAULT 'upcoming',
+  start_date DATE,
+  end_date DATE,
+  description TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS entries (

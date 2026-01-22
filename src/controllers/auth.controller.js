@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { pool } from '../config/db.js';
+import { sendEmail } from '../utils/mailer.js';
+import { generateWelcomeEmail, generateAdvertiserWelcomeEmail } from '../utils/emailTemplates.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -108,6 +110,41 @@ export const register = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
+
+    // Send appropriate welcome email based on role
+    try {
+      let welcomeEmailHtml;
+      let emailSubject;
+      
+      if (userRole === 'user') {
+        welcomeEmailHtml = generateWelcomeEmail({
+          email: newUser.email,
+          firstName: firstName,
+          username: username
+        });
+        emailSubject = '🎉 Welcome to Gotta Scan Them All™ - Your Journey Begins!';
+      } else if (userRole === 'advertiser' || userRole === 'ancillary_advertiser') {
+        welcomeEmailHtml = generateAdvertiserWelcomeEmail({
+          email: newUser.email,
+          firstName: firstName,
+          username: username,
+          company: company
+        });
+        emailSubject = '🚀 Welcome to Gotta Scan Them All™ - Advertiser Platform Access!';
+      }
+      
+      if (welcomeEmailHtml) {
+        await sendEmail(
+          newUser.email,
+          emailSubject,
+          welcomeEmailHtml
+        );
+        console.log(`Welcome email sent to ${newUser.email} (${userRole})`);
+      }
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError);
+      // Don't fail registration if email fails
+    }
 
     res.json({ message: 'User registered', token, user: newUser });
   } catch (err) {
